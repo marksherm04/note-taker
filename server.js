@@ -3,6 +3,9 @@ const express = require("express");
 const fs = require("fs");
 const app = express();
 const path = require("path");
+// installed uuid package to give each note a unique ID when saved - found in npm express packages
+const { v4: uuidv4 } = require('uuid');
+uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
 
 // uses local 3001 port or lower when deploying to Heroku
 const PORT = process.env.PORT || 3001;
@@ -27,7 +30,8 @@ app.get("/notes", (req, res) => {
 });
 
 
-// API routes -- GET routes
+// API routes 
+// GET route for request to fetch notes stored by user, app is going to only readfile here and PARSE note
 app.get("/api/notes", (req, res) => {
 	fs.readFile(path.join(__dirname, "./db/db.json"), (err, data) => {
 		if (err) {
@@ -36,19 +40,21 @@ app.get("/api/notes", (req, res) => {
 		else {
 			const userNote = JSON.parse(data);
 			res.send(userNote);
-		}
+		};
 	});
 });
-
+// POST route to submit note written by user
 app.post("/api/notes", (req,res) => {
 	const userNote = req.body;
-	notes.push(userNote);
+	userNote.id = uuidv4();
+	// db.json is going to read then write note file, the noteContent is going to be parsed (data is no error),  
+	// and then convert it to a string, if errors then message will be thrown to user
 	fs.readFile(path.join(__dirname, "./db/db.json"), (err, data) => {
 		const noteContent = JSON.parse(data);
-		const newNote = [...noteContent, userNote];
-		JSON.stringify(newNote);
-		res.send(newNote);
-		fs.writeFile(path.join(__dirname, "./db/db.json"), JSON.stringify(newNote), (err, data) => {
+		const writeNewNote = [...noteContent, userNote];
+		JSON.stringify(writeNewNote);
+		res.send(writeNewNote);
+		fs.writeFile(path.join(__dirname, "./db/db.json"), JSON.stringify(writeNewNote), (err, data) => {
 			if (err) {
 				throw (err);
 			}
@@ -58,7 +64,7 @@ app.post("/api/notes", (req,res) => {
 
 
 
-
+// tells the user which port they are on when running NPM start
 app.listen(PORT, () => {
 	console.log(`API server now on port ${PORT}!`);
 });
