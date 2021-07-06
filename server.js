@@ -7,9 +7,6 @@ const path = require("path");
 // uses local 3001 port or lower when deploying to Heroku
 const PORT = process.env.PORT || 3001;
 
-require("./routes/apiRoutes");
-require("./routes/htmlRoutes");
-
 // parse incoming string or array data
 app.use(express.urlencoded({ extended: true }));
 
