@@ -3,6 +3,7 @@ const express = require("express");
 const fs = require("fs");
 const app = express();
 const path = require("path");
+
 // installed uuid package to give each note a unique ID when saved - found in npm express packages
 const { v4: uuidv4 } = require('uuid');
 uuidv4(); // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
@@ -44,7 +45,7 @@ app.get("/api/notes", (req, res) => {
 	});
 });
 // POST route to submit note written by user
-app.post("/api/notes", (req,res) => {
+app.post("/api/notes", (req, res) => {
 	const userNote = req.body;
 	userNote.id = uuidv4();
 	// db.json is going to read then write note file, the noteContent is going to be parsed (data is no error),  
@@ -62,7 +63,26 @@ app.post("/api/notes", (req,res) => {
 	});
 });
 
+app.delete("/api/notes/:id", (req, res) => {
+	const currentNotes = path.join(__dirname, "/db/db.json");
+	const newNotes = JSON.parse(data);
+	// for loop to delete note via note ID
+	for (let i = 0; i < newNotes.length; i++) {
 
+		if (newNotes[i].id === req.params.id) {
+			newNotes.splice(i, 1);
+			break;
+		}
+	}
+	fs.writeFile(currentNotes, JSON.stringify(newNotes), (err, data) => {
+	if (err) {
+		throw (err);
+	} else {
+		console.log("You deleted a note");
+	}
+	});
+	res.json(newNotes);
+});
 
 // tells the user which port they are on when running NPM start
 app.listen(PORT, () => {
