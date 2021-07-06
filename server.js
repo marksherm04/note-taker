@@ -63,25 +63,29 @@ app.post("/api/notes", (req, res) => {
 	});
 });
 
+// DELETE route that will delete note already saved
 app.delete("/api/notes/:id", (req, res) => {
-	const currentNotes = path.join(__dirname, "/db/db.json");
-	const newNotes = JSON.parse(data);
-	// for loop to delete note via note ID
-	for (let i = 0; i < newNotes.length; i++) {
-
-		if (newNotes[i].id === req.params.id) {
-			newNotes.splice(i, 1);
-			break;
-		}
-	}
-	fs.writeFile(currentNotes, JSON.stringify(newNotes), (err, data) => {
-	if (err) {
-		throw (err);
-	} else {
-		console.log("You deleted a note");
-	}
+	// findNoteId is finding the id that is clicked to delete by searching the id parameters
+	const findNoteId = req.params.id;
+	fs.readFile(path.join(__dirname, "./db/db.json"), (err, data) => {
+		if (err) {
+			throw (err);
+		} else {
+			const addedNote = JSON.parse(data);
+			for (let i = 0; i < addedNote.length; i++) {
+				if (addedNote[i].id === findNoteId) {
+					addedNote.splice(i, 1);
+					fs.writeFile(path.join(__dirname, "./db/db.json"), JSON.stringify(addedNote), (err, data) => {
+						if (err) {
+							throw (err);
+						} else {
+							res.send(addedNote);
+						};
+					});
+				};
+			};
+		};
 	});
-	res.json(newNotes);
 });
 
 // tells the user which port they are on when running NPM start
