@@ -1,8 +1,7 @@
-const { notDeepStrictEqual, notEqual } = require("assert");
-const { json } = require("body-parser");
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const router = require("express").Router();
 
 
 // API routes -- GET routes
@@ -33,3 +32,5 @@ app.post("/api/notes", (req,res) => {
 		});
 	});
 });
+
+module.exports = router;
