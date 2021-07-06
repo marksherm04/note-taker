@@ -67,14 +67,19 @@ app.post("/api/notes", (req, res) => {
 app.delete("/api/notes/:id", (req, res) => {
 	// findNoteId is finding the id that is clicked to delete by searching the id parameters
 	const findNoteId = req.params.id;
+	// joins the directory db.json saved notes into one path
 	fs.readFile(path.join(__dirname, "./db/db.json"), (err, data) => {
 		if (err) {
 			throw (err);
 		} else {
+			// for loop that gives notes an id and adds 1 to each one by i++,
+			// if the parsed addedNote ID equals the findNoteId, then it'll splice the [i] addedNote
 			const addedNote = JSON.parse(data);
 			for (let i = 0; i < addedNote.length; i++) {
 				if (addedNote[i].id === findNoteId) {
 					addedNote.splice(i, 1);
+					// when the file is written, it'll join the notes into 1 path and then convert it into a string with stringify,
+					// it will throw an err or send a response to the user with the addedNote as text
 					fs.writeFile(path.join(__dirname, "./db/db.json"), JSON.stringify(addedNote), (err, data) => {
 						if (err) {
 							throw (err);
