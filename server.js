@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(express.static("./public"));
 
 // / callback function executing everytime homepage index.html route is accessed with GET request
-app.get("*", (req, res) => {
+app.get("/", (req, res) => {
 	res.sendFile(path.join(_dirname, "./public/index.html")) // may need to add ./public in front -- going to test
 });
 
