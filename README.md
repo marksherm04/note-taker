@@ -26,6 +26,8 @@ This can be used to keep track of any tasks or notes you want to save.  It is a 
 
 ## Screenshot
 
+![Note Taker](https://user-images.githubusercontent.com/81338255/124793054-9d3c0700-df1b-11eb-9139-7933752df696.gif)
+
 
 ## Contributing
 Mark Sherman
