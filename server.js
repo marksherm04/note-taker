@@ -32,21 +32,27 @@ app.get("/notes", (req, res) => {
 
 
 // API routes 
-// GET route for request to fetch notes stored by user, app is going to only readfile here and PARSE note
+// GET route for request to fetch notes stored by user, app is going to only readfile here and PARSE notes
 app.get("/api/notes", (req, res) => {
 	fs.readFile(path.join(__dirname, "./db/db.json"), (err, data) => {
-		if (err) {
-			throw (err)
-		}
-		else {
-			const userNote = JSON.parse(data);
-			res.send(userNote);
+		let userNote = JSON.parse(data);
+		if (userNote) {
+			res.json(userNote);
+		} else {
+			res.send(404);
 		};
+		// if (err) {
+		// 	throw (err)
+		// }
+		// else {
+		// 	let userNote = JSON.parse(data);
+		// 	res.json(userNote);
+		// };
 	});
 });
 // POST route to submit note written by user
 app.post("/api/notes", (req, res) => {
-	const userNote = req.body;
+	let userNote = req.body;
 	userNote.id = uuidv4();
 	// db.json is going to read then write note file, the noteContent is going to be parsed (data is no error),  
 	// and then convert it to a string, if errors then message will be thrown to user
@@ -54,7 +60,7 @@ app.post("/api/notes", (req, res) => {
 		const noteContent = JSON.parse(data);
 		const writeNewNote = [...noteContent, userNote];
 		JSON.stringify(writeNewNote);
-		res.send(writeNewNote);
+		res.json(writeNewNote);
 		fs.writeFile(path.join(__dirname, "./db/db.json"), JSON.stringify(writeNewNote), (err, data) => {
 			if (err) {
 				throw (err);
@@ -66,7 +72,7 @@ app.post("/api/notes", (req, res) => {
 // DELETE route that will delete note already saved
 app.delete("/api/notes/:id", (req, res) => {
 	// findNoteId is finding the id that is clicked to delete by searching the id parameters
-	const findNoteId = req.params.id;
+	let findNoteId = req.params.id;
 	// joins the directory db.json saved notes into one path
 	fs.readFile(path.join(__dirname, "./db/db.json"), (err, data) => {
 		if (err) {
@@ -74,7 +80,7 @@ app.delete("/api/notes/:id", (req, res) => {
 		} else {
 			// for loop that gives notes an id and adds 1 to each one by i++,
 			// if the parsed addedNote ID equals the findNoteId, then it'll splice the [i] addedNote
-			const addedNote = JSON.parse(data);
+			let addedNote = JSON.parse(data);
 			for (let i = 0; i < addedNote.length; i++) {
 				if (addedNote[i].id === findNoteId) {
 					addedNote.splice(i, 1);
@@ -84,7 +90,7 @@ app.delete("/api/notes/:id", (req, res) => {
 						if (err) {
 							throw (err);
 						} else {
-							res.send(addedNote);
+							res.json(addedNote);
 						};
 					});
 				};
