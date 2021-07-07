@@ -41,20 +41,14 @@ app.get("/api/notes", (req, res) => {
 		} else {
 			res.send(404);
 		};
-		// if (err) {
-		// 	throw (err)
-		// }
-		// else {
-		// 	let userNote = JSON.parse(data);
-		// 	res.json(userNote);
-		// };
 	});
 });
+
 // POST route to submit note written by user
 app.post("/api/notes", (req, res) => {
 	let userNote = req.body;
 	userNote.id = uuidv4();
-	// db.json is going to read then write note file, the noteContent is going to be parsed (data is no error),  
+	// db.json is going to read then write note file, the noteContent is going to be parsed (data if no error),  
 	// and then convert it to a string, if errors then message will be thrown to user
 	fs.readFile(path.join(__dirname, "./db/db.json"), (err, data) => {
 		const noteContent = JSON.parse(data);
@@ -62,9 +56,6 @@ app.post("/api/notes", (req, res) => {
 		JSON.stringify(writeNewNote);
 		res.json(writeNewNote);
 		fs.writeFile(path.join(__dirname, "./db/db.json"), JSON.stringify(writeNewNote), (err, data) => {
-			if (err) {
-				throw (err);
-			}
 		});
 	});
 });
@@ -75,25 +66,21 @@ app.delete("/api/notes/:id", (req, res) => {
 	let findNoteId = req.params.id;
 	// joins the directory db.json saved notes into one path
 	fs.readFile(path.join(__dirname, "./db/db.json"), (err, data) => {
-		if (err) {
-			throw (err);
-		} else {
-			// for loop that gives notes an id and adds 1 to each one by i++,
-			// if the parsed addedNote ID equals the findNoteId, then it'll splice the [i] addedNote
-			let addedNote = JSON.parse(data);
-			for (let i = 0; i < addedNote.length; i++) {
-				if (addedNote[i].id === findNoteId) {
-					addedNote.splice(i, 1);
-					// when the file is written, it'll join the notes into 1 path and then convert it into a string with stringify,
-					// it will throw an err or send a response to the user with the addedNote as text
-					fs.writeFile(path.join(__dirname, "./db/db.json"), JSON.stringify(addedNote), (err, data) => {
-						if (err) {
-							throw (err);
-						} else {
-							res.json(addedNote);
-						};
-					});
-				};
+		// for loop that gives notes an id and adds 1 to each one by i++,
+		// if the parsed addedNote ID equals the findNoteId, then it'll splice the [i] addedNote
+		let addedNote = JSON.parse(data);
+		for (let i = 0; i < addedNote.length; i++) {
+			if (addedNote[i].id === findNoteId) {
+				addedNote.splice(i, 1);
+				// when the file is written, it'll join the notes into 1 path and then convert it into a string with stringify,
+				// it will send a response to the user with the addedNote as text, else ask user to select a note to delete
+				fs.writeFile(path.join(__dirname, "./db/db.json"), JSON.stringify(addedNote), (err, data) => {
+					if (addedNote) {
+						res.json(addedNote);
+					} else {
+						res.send(400).send("Please select a note to delete!");
+					};
+				});
 			};
 		};
 	});
